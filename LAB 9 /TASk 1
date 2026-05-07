@@ -1,0 +1,246 @@
+#include <iostream>
+using namespace std;
+
+class node
+{
+public:
+    int data;
+    node* next;
+    node* prev;
+
+    node(int value)
+    {
+        data = value;
+        next = nullptr;
+        prev = nullptr;
+    }
+};
+
+class doublylinkedlist
+{
+private:
+    node* head;
+
+public:
+    doublylinkedlist()
+    {
+        head = nullptr;
+    }
+
+    void insertatstart(int value)
+    {
+        node* newnode = new node(value);
+
+        if (head == nullptr)
+        {
+            head = newnode;
+            return;
+        }
+
+        newnode->next = head;
+        head->prev = newnode;
+        head = newnode;
+    }
+
+    void insertatend(int value)
+    {
+        node* newnode = new node(value);
+
+        if (head == nullptr)
+        {
+            head = newnode;
+            return;
+        }
+
+        node* temp = head;
+
+        while (temp->next != nullptr)
+        {
+            temp = temp->next;
+        }
+
+        temp->next = newnode;
+        newnode->prev = temp;
+    }
+
+    void insertatposition(int value, int position)
+    {
+        if (position <= 1 || head == nullptr)
+        {
+            insertatstart(value);
+            return;
+        }
+
+        node* newnode = new node(value);
+        node* temp = head;
+
+        int count = 1;
+
+        while (temp->next != nullptr && count < position - 1)
+        {
+            temp = temp->next;
+            count++;
+        }
+
+        newnode->next = temp->next;
+        newnode->prev = temp;
+
+        if (temp->next != nullptr)
+        {
+            temp->next->prev = newnode;
+        }
+
+        temp->next = newnode;
+    }
+
+    void deletebyvalue(int value)
+    {
+        if (head == nullptr)
+        {
+            cout << "list is empty" << endl;
+            return;
+        }
+
+        node* temp = head;
+
+        if (head->data == value)
+        {
+            head = head->next;
+
+            if (head != nullptr)
+            {
+                head->prev = nullptr;
+            }
+
+            delete temp;
+
+            cout << value << " deleted from list" << endl;
+            return;
+        }
+
+        while (temp != nullptr && temp->data != value)
+        {
+            temp = temp->next;
+        }
+
+        if (temp == nullptr)
+        {
+            cout << "value not found" << endl;
+            return;
+        }
+
+        if (temp->next != nullptr)
+        {
+            temp->next->prev = temp->prev;
+        }
+
+        if (temp->prev != nullptr)
+        {
+            temp->prev->next = temp->next;
+        }
+
+        delete temp;
+
+        cout << value << " deleted from list" << endl;
+    }
+
+    void displayforward()
+    {
+        if (head == nullptr)
+        {
+            cout << "list is empty" << endl;
+            return;
+        }
+
+        node* temp = head;
+
+        cout << "forward traversal: ";
+
+        while (temp != nullptr)
+        {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+
+        cout << endl;
+    }
+
+    void displayreverse()
+    {
+        if (head == nullptr)
+        {
+            cout << "list is empty" << endl;
+            return;
+        }
+
+        node* temp = head;
+
+        while (temp->next != nullptr)
+        {
+            temp = temp->next;
+        }
+
+        cout << "reverse traversal: ";
+
+        while (temp != nullptr)
+        {
+            cout << temp->data << " ";
+            temp = temp->prev;
+        }
+
+        cout << endl;
+    }
+};
+
+int main()
+{
+    doublylinkedlist list;
+
+    list.insertatend(10);
+    list.insertatend(20);
+    list.insertatend(30);
+
+    cout << "list after inserting at end:" << endl;
+    list.displayforward();
+
+    list.insertatstart(5);
+
+    cout << endl;
+    cout << "list after inserting at start:" << endl;
+    list.displayforward();
+
+    list.insertatposition(15, 3);
+
+    cout << endl;
+    cout << "list after inserting at position 3:" << endl;
+    list.displayforward();
+
+    cout << endl;
+    cout << "forward traversal:" << endl;
+    list.displayforward();
+
+    cout << endl;
+    cout << "reverse traversal:" << endl;
+    list.displayreverse();
+
+    cout << endl;
+    cout << "deleting 5:" << endl;
+    list.deletebyvalue(5);
+    list.displayforward();
+
+    cout << endl;
+    cout << "deleting 30:" << endl;
+    list.deletebyvalue(30);
+    list.displayforward();
+
+    cout << endl;
+    cout << "deleting 15:" << endl;
+    list.deletebyvalue(15);
+    list.displayforward();
+
+    cout << endl;
+    cout << "reverse traversal after deletions:" << endl;
+    list.displayreverse();
+
+    return 0;
+}

@@ -1,0 +1,239 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class node
+{
+public:
+    int songid;
+    string songname;
+    float duration;
+
+    node* next;
+    node* prev;
+
+    node(int id, string name, float time)
+    {
+        songid = id;
+        songname = name;
+        duration = time;
+
+        next = nullptr;
+        prev = nullptr;
+    }
+};
+
+class playlist
+{
+private:
+    node* head;
+    node* current;
+
+public:
+    playlist()
+    {
+        head = nullptr;
+        current = nullptr;
+    }
+
+    void addsong(int id, string name, float time)
+    {
+        node* newnode = new node(id, name, time);
+
+        if (head == nullptr)
+        {
+            head = newnode;
+            current = newnode;
+            return;
+        }
+
+        node* temp = head;
+
+        while (temp->next != nullptr)
+        {
+            temp = temp->next;
+        }
+
+        temp->next = newnode;
+        newnode->prev = temp;
+    }
+
+    void deletesong(string name)
+    {
+        if (head == nullptr)
+        {
+            cout << "playlist is empty" << endl;
+            return;
+        }
+
+        node* temp = head;
+
+        while (temp != nullptr && temp->songname != name)
+        {
+            temp = temp->next;
+        }
+
+        if (temp == nullptr)
+        {
+            cout << "song not found" << endl;
+            return;
+        }
+
+        if (temp == head)
+        {
+            head = head->next;
+
+            if (head != nullptr)
+            {
+                head->prev = nullptr;
+            }
+        }
+        else
+        {
+            temp->prev->next = temp->next;
+
+            if (temp->next != nullptr)
+            {
+                temp->next->prev = temp->prev;
+            }
+        }
+
+        if (current == temp)
+        {
+            current = head;
+        }
+
+        delete temp;
+
+        cout << "song deleted successfully" << endl;
+    }
+
+    void playnext()
+    {
+        if (current == nullptr)
+        {
+            cout << "playlist is empty" << endl;
+            return;
+        }
+
+        if (current->next == nullptr)
+        {
+            cout << "no next song available" << endl;
+            return;
+        }
+
+        current = current->next;
+
+        cout << "now playing" << endl;
+        cout << current->songid << endl;
+        cout << current->songname << endl;
+        cout << current->duration << endl;
+    }
+
+    void playprevious()
+    {
+        if (current == nullptr)
+        {
+            cout << "playlist is empty" << endl;
+            return;
+        }
+
+        if (current->prev == nullptr)
+        {
+            cout << "no previous song available" << endl;
+            return;
+        }
+
+        current = current->prev;
+
+        cout << "now playing" << endl;
+        cout << current->songid << endl;
+        cout << current->songname << endl;
+        cout << current->duration << endl;
+    }
+
+    void reverseplaylist()
+    {
+        if (head == nullptr)
+        {
+            cout << "playlist is empty" << endl;
+            return;
+        }
+
+        node* temp = nullptr;
+        node* currentnode = head;
+
+        while (currentnode != nullptr)
+        {
+            temp = currentnode->prev;
+            currentnode->prev = currentnode->next;
+            currentnode->next = temp;
+
+            currentnode = currentnode->prev;
+        }
+
+        if (temp != nullptr)
+        {
+            head = temp->prev;
+        }
+
+        current = head;
+
+        cout << "playlist reversed successfully" << endl;
+    }
+
+    void displayplaylist()
+    {
+        if (head == nullptr)
+        {
+            cout << "playlist is empty" << endl;
+            return;
+        }
+
+        node* temp = head;
+
+        cout << "playlist songs" << endl;
+
+        while (temp != nullptr)
+        {
+            cout << "song id " << temp->songid << endl;
+            cout << "song name " << temp->songname << endl;
+            cout << "duration " << temp->duration << endl;
+            cout << endl;
+
+            temp = temp->next;
+        }
+    }
+};
+
+int main()
+{
+    playlist p;
+
+    p.addsong(1, "believer", 3.5);
+    p.addsong(2, "shapeofyou", 4.2);
+    p.addsong(3, "perfect", 5.0);
+
+    cout << "playlist after adding songs" << endl;
+    p.displayplaylist();
+
+    cout << "play next song" << endl;
+    p.playnext();
+
+    cout << endl;
+    cout << "play previous song" << endl;
+    p.playprevious();
+
+    cout << endl;
+    cout << "deleting song perfect" << endl;
+    p.deletesong("perfect");
+
+    p.displayplaylist();
+
+    cout << "reversing playlist" << endl;
+    p.reverseplaylist();
+
+    p.displayplaylist();
+
+    return 0;
+}
